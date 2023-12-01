@@ -6,13 +6,13 @@ namespace AdventOfCoding.Days {
 
 		protected override void Runner(Reader reader)
 		{
-			(string Str, int Number)[] nts = {
-				("one", 1), ("two", 2), ("three", 3),
-				("four", 4), ("five", 5), ("six", 6),
-				("seven", 7), ("eight", 8), ("nine", 9)
+			(string Str, string Number)[] nts = {
+				("one", "o1e"), ("two", "t2o"), ("three", "t3e"),
+				("four", "f4r"), ("five", "f5e"), ("six", "s6x"),
+				("seven", "s7n"), ("eight", "e8t"), ("nine", "n9n")
 			};
 			this.Result = reader.ReadAndGetLines()
-				.Select(line => nts.Aggregate(line, (current, nt) => current.Replace(nt.Str, $"{nt.Str[0]}{nt.Number}{nt.Str[^1]}")))
+				.Select(line => nts.Aggregate(line, (current, nt) => current.Replace(nt.Str, nt.Number)))
 				.Select(line => int.Parse($"{line.First(char.IsDigit)}{line.Last(char.IsDigit)}"))
 				.Sum();
 		}
