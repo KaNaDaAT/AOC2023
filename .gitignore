@@ -4,7 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 # AOC https://www.reddit.com/r/adventofcode/wiki/faqs/copyright/inputs/
-Day*/*.data
+AdventOfCoding/Days/Day*/Day*A.data
+AdventOfCoding/Days/Day*/Day*B.data
 
 # User-specific files
 *.rsuser
