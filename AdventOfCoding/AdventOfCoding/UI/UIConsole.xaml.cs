@@ -1,19 +1,11 @@
 ﻿using AdventOfCoding.Function.Command;
-using Lib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace AdventOfCoding {
@@ -28,38 +20,51 @@ namespace AdventOfCoding {
 		public bool InputEnabled = false;
 
 		private static UIConsole _instance = null;
-		public static UIConsole Instance {
+		public static UIConsole Instance
+		{
 			get {
-				if (_instance == null) {
+				if (_instance == null)
+				{
 					_instance = new UIConsole();
 				}
 				return _instance;
 			}
 			private set { }
 		}
-
 		private Dispatcher dispatcher;
 
-		public Dictionary<string, Command> commands = new Dictionary<string, Command>();
+		public Dictionary<string, Command> Commands = new Dictionary<string, Command>();
+		private readonly List<string> _commandHistory = new();
+		private int _commandHistorySize = 100;
+		private int _commandHistoryIndex = -1;
+		private string _commandCurrent = "";
 
-		public UIConsole() {
+		public UIConsole()
+		{
 			InitializeComponent();
 			_instance = this;
 
 			tbConsole.TextChanged += readOnlyKeeper;
 			tbConsole.KeyDown += OnKeyDownHandler;
+			tbConsole.PreviewKeyDown += TbConsole_PreviewKeyDown;
 		}
 
-		public static void SetDispatcher(Dispatcher dispatcher) {
+		public static void SetDispatcher(Dispatcher dispatcher)
+		{
 			Instance.dispatcher = dispatcher;
 		}
 
-		public static void Write(object output) {
+		#region Write
+
+		public static void Write(object output)
+		{
 			Write(output.ToString());
 		}
 
-		public static void Write(string output) {
-			if (Instance.Dispatcher != null) {
+		public static void Write(string output)
+		{
+			if (Instance.Dispatcher != null)
+			{
 				Instance.Dispatcher.Invoke(() => {
 					Instance.lbStatus.Content = UIConsoleState.Processing;
 					Instance.lbStatus.UpdateLayout();
@@ -72,7 +77,9 @@ namespace AdventOfCoding {
 					Instance.lbStatus.Content = UIConsoleState.Idle;
 					Instance.lbStatus.UpdateLayout();
 				});
-			} else {
+			}
+			else
+			{
 				Instance.lbStatus.Content = UIConsoleState.Processing;
 				Instance.isUserInput = false;
 				Instance.tbConsole.AppendText(output);
@@ -84,15 +91,36 @@ namespace AdventOfCoding {
 			}
 		}
 
-		public static void WriteLine(object output) {
+		public static void WriteLine(object output)
+		{
 			WriteLine(output.ToString());
 		}
 
-		public static void WriteLine(string output) {
+		public static void WriteLine(string output)
+		{
 			Write(output + Environment.NewLine);
 		}
 
-		public static void SetText(string output) {
+		public static void WriteLine(Exception exception)
+			=> WriteError(exception);
+
+		public static void WriteCommand(string command)
+		{
+			Instance.AddCommandToHistory(command);
+		}
+
+		public static void WriteError(Exception exception)
+		{
+			Write(exception.ToString() + Environment.NewLine);
+			SwitchToCommandMode();
+		}
+
+		#endregion
+
+		#region Text
+
+		public static void SetText(string output)
+		{
 			Instance.isUserInput = false;
 			Instance.tbConsole.Text = output;
 			Instance.CurrentText = Instance.tbConsole.Text;
@@ -100,7 +128,8 @@ namespace AdventOfCoding {
 			Instance.isUserInput = true;
 		}
 
-		public static void ClearText() {
+		public static void ClearText()
+		{
 			Instance.isUserInput = false;
 			Instance.tbConsole.Text = "";
 			Instance.CurrentText = Instance.tbConsole.Text;
@@ -108,10 +137,31 @@ namespace AdventOfCoding {
 			Instance.isUserInput = true;
 		}
 
-		public static void SwitchToCommandMode() {
+		private void UpdateConsoleText(bool force = false)
+		{
+			if (force
+				|| !(
+					tbConsole.Text.StartsWith(CurrentText) &&
+					CurrentLine == tbConsole.GetLineIndexFromCharacterIndex(tbConsole.CaretIndex)
+				)
+				|| !InputEnabled
+			)
+			{
+				tbConsole.Text = CurrentText + InputText;
+				tbConsole.CaretIndex = tbConsole.Text.Length;
+			}
+		}
+
+		#endregion
+
+		#region Mode Swap
+
+		public static void SwitchToCommandMode()
+		{
 			Instance.InputEnabled = true;
 			Instance.tbConsole.IsReadOnly = false;
-			if (!Instance.CurrentText.EndsWith(Environment.NewLine) && Instance.tbConsole.Text != "") {
+			if (!Instance.CurrentText.EndsWith(Environment.NewLine) && Instance.tbConsole.Text != "")
+			{
 				WriteLine("");
 			}
 			Write(Environment.CurrentDirectory + "> ");
@@ -119,56 +169,141 @@ namespace AdventOfCoding {
 			Instance.lbStatus.UpdateLayout();
 		}
 
-		public static void SwitchToExecuteMode() {
+		public static void SwitchToExecuteMode()
+		{
 			Instance.lbStatus.Content = UIConsoleState.Processing;
 			Instance.lbStatus.UpdateLayout();
 			Instance.InputEnabled = false;
 			Instance.tbConsole.IsReadOnly = true;
 		}
 
-		public static void ExecuteCommand(string[] commandArgs) {
+		#endregion
+
+		#region Command
+
+		public static void ExecuteCommand(string[] commandArgs)
+		{
 			SwitchToExecuteMode();
 			string commandName = commandArgs[0];
-			if (Instance.commands.ContainsKey(commandName)) {
+			if (Instance.Commands.ContainsKey(commandName))
+			{
 				WriteLine("");
-				Instance.commands[commandName].Run(commandArgs);
+				Instance.Commands[commandName].Run(commandArgs);
 			}
 			SwitchToCommandMode();
 		}
 
+		private void CommandHistoryUp()
+		{
+			if (_commandHistoryIndex + 1 < _commandHistory.Count)
+			{
+				if (_commandHistoryIndex == -1)
+				{
+					_commandCurrent = InputText;
+				}
+				_commandHistoryIndex++;
+				InputText = _commandHistory[_commandHistoryIndex];
+				UpdateConsoleText(true);
+			}
+		}
+
+		private void CommandHistoryDown()
+		{
+			if (_commandHistoryIndex > 0)
+			{
+				_commandHistoryIndex--;
+				InputText = _commandHistory[_commandHistoryIndex];
+				UpdateConsoleText(true);
+			}
+			else if (_commandHistoryIndex == 0)
+			{
+				_commandHistoryIndex = -1;
+				InputText = _commandCurrent;
+				UpdateConsoleText(true);
+			}
+			else
+			{
+				_commandHistoryIndex = -1;
+			}
+		}
+
+		private void AddCommandToHistory(string command)
+		{
+			_commandHistory.Insert(0, command);
+			if (_commandHistory.Count > _commandHistorySize)
+			{
+				_commandHistory.RemoveAt(_commandHistorySize);
+			}
+			_commandHistoryIndex = -1;
+		}
+
+		#endregion
+
 		#region Event
 
-		private void readOnlyKeeper(object sender, TextChangedEventArgs e) {
-			if (!isUserInput) {
+		private void readOnlyKeeper(object sender, TextChangedEventArgs e)
+		{
+			if (!isUserInput)
+			{
 				return;
 			}
 			CurrentLine = tbConsole.LineCount - 1;
 
-			if (tbConsole.CaretIndex >= CurrentText.Length) {
+			if (tbConsole.CaretIndex >= CurrentText.Length)
+			{
 				InputText = tbConsole.Text.Substring(CurrentText.Length);
 				Console.WriteLine(InputText);
 			}
 
-			if (!(
-				tbConsole.Text.StartsWith(CurrentText) &&
-				CurrentLine == tbConsole.GetLineIndexFromCharacterIndex(tbConsole.CaretIndex)
-			) || !InputEnabled) {
-				tbConsole.Text = CurrentText + InputText;
+
+			UpdateConsoleText();
+		}
+
+
+
+		private void OnKeyDownHandler(object sender, KeyEventArgs e)
+		{
+			if ((e.Key == Key.Return || e.Key == Key.Enter) && tbConsole.CaretIndex >= CurrentText.Length)
+			{
+				AddCommandToHistory(InputText);
+				try
+				{
+					ExecuteCommand(Regex.Split(InputText, "\\s(?=(?:[^\'\"`]*([\'\"`]).*?\\1)*[^\'\"`]*$)"));
+				}
+				catch (Exception ex)
+				{
+					WriteError(ex);
+				}
 				tbConsole.CaretIndex = tbConsole.Text.Length;
+				InputText = "";
 			}
 		}
 
-
-
-		private void OnKeyDownHandler(object sender, KeyEventArgs e) {
-			if ((e.Key == Key.Return || e.Key == Key.Enter) && tbConsole.CaretIndex >= CurrentText.Length) {
-				ExecuteCommand(Regex.Split(InputText, "\\s(?=(?:[^\'\"`]*([\'\"`]).*?\\1)*[^\'\"`]*$)"));
+		private void TbConsole_PreviewKeyDown(object sender, KeyEventArgs e)
+		{
+			switch (e.Key)
+			{
+				case Key.Down:
+					if (tbConsole.CaretIndex < CurrentText.Length)
+						return;
+					CommandHistoryDown();
+					e.Handled = true;
+					return;
+				case Key.Up:
+					if (tbConsole.CaretIndex < CurrentText.Length)
+						return;
+					CommandHistoryUp();
+					e.Handled = true;
+					return;
+				case Key.Left:
+					if (tbConsole.CaretIndex == CurrentText.Length)
+						e.Handled = true;
+					return;
 			}
 		}
 
-		private void bClear_Click(object sender, RoutedEventArgs e) {
-			if (!InputEnabled)
-				return;
+		private void bClear_Click(object sender, RoutedEventArgs e)
+		{
 			ClearText();
 			SwitchToCommandMode();
 		}

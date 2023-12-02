@@ -51,6 +51,9 @@
 	  <None Update="Days\*\Day*.data">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	  <None Update="data.py">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
     <None Update="submit.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
