@@ -6,7 +6,7 @@ Welcome to my repository of Advent of Code solutions! This collection includes m
 | ---:| -------------- |:------:| -------- |
 | 1   | Trebuchet?     | ✔️     | C#       |
 | 2   | Cube Conundrum | ✔️     | C#       |
-| 3   | Gear Ratios    | ✔️     |          |
+| 3   | Gear Ratios    | ✔️     | C#       |
 | 4   |                |        |          |
 | 5   |                |        |          |
 | 6   |                |        |          |
