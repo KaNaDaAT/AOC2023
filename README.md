@@ -2,33 +2,34 @@
 
 Welcome to my repository of Advent of Code solutions! This collection includes my attempts at solving the challenges presented in Advent of Code.
 
-| Day | Title          | Status | Language |
-| ---:| -------------- |:------:| -------- |
-| 1   | Trebuchet?     | ✔️     | C#       |
-| 2   | Cube Conundrum | ✔️     | C#       |
-| 3   |                |        |          |
-| 4   |                |        |          |
-| 5   |                |        |          |
-| 6   |                |        |          |
-| 7   |                |        |          |
-| 8   |                |        |          |
-| 9   |                |        |          |
-| 10  |                |        |          |
-| 11  |                |        |          |
-| 12  |                |        |          |
-| 13  |                |        |          |
-| 14  |                |        |          |
-| 15  |                |        |          |
-| 16  |                |        |          |
-| 17  |                |        |          |
-| 18  |                |        |          |
-| 19  |                |        |          |
-| 20  |                |        |          |
-| 21  |                |        |          |
-| 22  |                |        |          |
-| 23  |                |        |          |
-| 24  |                |        |          |
-| 25  |                |        |          |
+| Day | Title          | Status | Language | Coding Time |
+| ---:| -------------- |:------:| -------- | ----------- |
+| 1   | Trebuchet?     | ✔️     | C#       | 00:35h      |
+| 2   | Cube Conundrum | ✔️     | C#       | 00:47h      |
+| 3   | Gear Ratios    | ✔️     | C#       | 01:12h      |
+| 4   |                |        |          |             |
+| 5   |                |        |          |             |
+| 6   |                |        |          |             |
+| 7   |                |        |          |             |
+| 8   |                |        |          |             |
+| 9   |                |        |          |             |
+| 10  |                |        |          |             |
+| 11  |                |        |          |             |
+| 12  |                |        |          |             |
+| 13  |                |        |          |             |
+| 14  |                |        |          |             |
+| 15  |                |        |          |             |
+| 16  |                |        |          |             |
+| 17  |                |        |          |             |
+| 18  |                |        |          |             |
+| 19  |                |        |          |             |
+| 20  |                |        |          |             |
+| 21  |                |        |          |             |
+| 22  |                |        |          |             |
+| 23  |                |        |          |             |
+| 24  |                |        |          |             |
+| 25  |                |        |          |             |
+
 
 ## About the Solutions
 
