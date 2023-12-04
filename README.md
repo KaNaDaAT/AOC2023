@@ -7,7 +7,7 @@ Welcome to my repository of Advent of Code solutions! This collection includes m
 | 1   | Trebuchet?     | ✔️     | C#       | 00:35h      |
 | 2   | Cube Conundrum | ✔️     | C#       | 00:47h      |
 | 3   | Gear Ratios    | ✔️     | C#       | 01:12h      |
-| 4   |                |        |          |             |
+| 4   | Scratchcards   | ✔️     | C#       | 01:07h      |
 | 5   |                |        |          |             |
 | 6   |                |        |          |             |
 | 7   |                |        |          |             |
@@ -30,7 +30,6 @@ Welcome to my repository of Advent of Code solutions! This collection includes m
 | 24  |                |        |          |             |
 | 25  |                |        |          |             |
 
-
 ## About the Solutions
 
 ### AOCSetup
@@ -48,5 +47,3 @@ The solutions in this repository are for now primarily implemented in C#. The pr
 My solutions tends to be very LINQ (Language-Integrated Query). LINQ provides a powerful way to query and manipulate data in C#, making the code more concise and expressive.
 
 It might not always follow best practices nor be most effiecient. I am just trying to have some very short LINQ code most of the time.
-
-
