@@ -1,24 +1,16 @@
 ﻿using Lib;
 using System;
-using System.Diagnostics;
+using System.Linq;
 
 namespace AdventOfCoding.Days {
 	public class Day04A : DayAbstract {
 
-		protected override void Runner(Reader reader) {
-			string[] lines = reader.ReadAndGetLines();
-
-
-			for(int i = 0; i < lines.Length; i++) {
-				
-			}
-
-			this.Result = null;
-
-			/* Output Region */
-			if (!IsDebugMode)
-				return;
-			this.ToPrint.AppendLine("");
+		protected override void Runner(Reader reader)
+		{
+			this.Result = reader.ReadAndGetLines()
+				.Select(line => line.Split(':')[1].Trim().Split(" | "))
+				.Select(pair => pair[0].Split(" ", (StringSplitOptions)1).Intersect(pair[1].Split(" ", (StringSplitOptions)1)).Count())
+				.Sum(value => (int)Math.Pow(2, value - 1));
 		}
 
 	}
