@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Lib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Lib {
+namespace Lib.Extensions {
 	public static class ListExtensions {
 
 		public static IEnumerable<TResult> SelectSubset<TSource, TResult>(
@@ -72,6 +73,21 @@ namespace Lib {
 
 			var list = source.Skip(from).Take(to - from).ToList();
 			return source.Select(_ => selector.Invoke(_, list));
+		}
+
+		public static IEnumerable<(int index, TSource item)> Index<TSource>(this IEnumerable<TSource> source)
+		{
+			ArgumentNullException.ThrowIfNull(source);
+			int start = 0;
+			foreach (var item in source)
+				yield return (start++, item);
+		}
+
+		public static IEnumerable<(int index, TSource item)> Index<TSource>(this IEnumerable<TSource> source, int start)
+		{
+			ArgumentNullException.ThrowIfNull(source);
+			foreach (var item in source)
+				yield return (start++, item);
 		}
 	}
 }
